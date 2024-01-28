@@ -1,0 +1,9 @@
+jumlah_data = int(input("masukan jumlah data: "))
+total_nilai = 0
+
+for i in range(jumlah_data):
+    nilai = float(input(f"Masukan nilai ke -{i-i}: "))
+    total_nilai += nilai
+    
+rata_rata = total_nilai / jumlah_data
+print(f"Rata-rata nilai adalah {rata_rata}")
