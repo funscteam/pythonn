@@ -1,0 +1,18 @@
+import random 
+
+angka_rahasia = random.randint(1, 100)
+tebakan = None
+kesempatan = 0
+
+while tebakan != angka_rahasia and kesempatan < 3:
+    tebakan = int(input("tebakan angka (1 - 100): "))
+    kesempatan += 1
+    
+    if tebakan < angka_rahasia:
+        print("tebakan terlalu rendah")
+    elif tebakan > angka_rahasia:
+        print("Tebakan terlalu tinggi")
+    else :
+        print("selamat! anda menebak benar.")
+if kesempatan == 3 and tebakan != angka_rahasia:
+    print(f"Anda gagal. angka rahasian adalah {angka_rahasia}. ")
