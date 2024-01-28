@@ -1,0 +1,3 @@
+teks = input("masukan sebuah teks :")
+teks_terbalik = teks[::-1]
+print("teks terbalik:", teks_terbalik)
