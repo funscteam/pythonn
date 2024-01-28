@@ -1,0 +1,9 @@
+jumlah_mahasiswa = int(input("Masukan jumlah mahasiswa :"))
+total_nilai = 0
+
+for i in range(jumlah_mahasiswa):
+    nilai = float(input("Masukan nilai mahasiswa ke-{i+1: "))
+    total_nilai += nilai
+
+rata_rata = total_nilai / jumlah_mahasiswa
+print("Rata_rata nilai mahasiswa :", rata_rata)
