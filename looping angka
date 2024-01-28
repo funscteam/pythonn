@@ -1,0 +1,11 @@
+while True :
+    try:
+        angka = float(input("Masukan angka possitif :"))
+        if angka <= 0:
+            break
+        else:
+            print("masukan angka positif")
+    except ValueErrot:
+        print("Masuka angka yang valid")
+print("Angka yang dimasukan :", angka)
+        
