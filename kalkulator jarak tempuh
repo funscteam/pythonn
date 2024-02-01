@@ -1,0 +1,8 @@
+def hitung_jarak_tempuh(kecepatan, waktu):
+    jarak = kecepatan * waktu
+    return jarak
+
+kecepatan_mobil = float(input("Masukan kecepatan mobil (km/jam):"))
+waktu_perjalanan = float(input("Masukan waktu perjalan (jam):"))
+hasil_jarak_tempuh = hitung_jarak_tempuh(kecepatan_mobil, waktu_perjalanan)
+print("Jarak tempuh mobil:", hasil_jarak_tempuh, "Kilometer")
