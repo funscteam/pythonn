@@ -1,0 +1,10 @@
+def bagi_pecahan(pembilang1, penyebut1, pembilang2, penyebut2):
+    hasil_pembilang = pembilang1 * penyebut2
+    hasil_peneyebut = penyebut1 * pembilang2
+    return hasil_pembilang, hasil_peneyebut
+
+pecahan1 = (int(input("Masukan pembilang pecahan 1 :")), int(input("Masukan penyebutt bilangan 1:")))
+pecahan2 = (int(input("MAsukan pembilanga pecahan 2 :")), int(input("Masukan penyebut pecahan 2:")))
+
+hasil_pembilang, hasil_peneyebut = bagi_pecahan(*pecahan1, *pecahan2)
+print(f"Hasil pembhagian pecahan: {hasil_pembilang}/{hasil_peneyebut}")
