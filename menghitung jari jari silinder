@@ -1,0 +1,10 @@
+import math
+
+def hitung_volume_silinder(jari_jari, tinggi):
+    volume = math.pi * jari_jari**2 * tinggi
+    return volume 
+
+jari_silinder = float(input("Masukan jari-jaro silinder :"))
+tinggi_silinder = float(input("MAsukan tinggi silinder: "))
+hasil_volume = hitung_volume_silinder(jari_silinder, tinggi_silinder)
+print("Volume silinder:", hasil_volume)
