@@ -1,0 +1,2 @@
+kuadrat = lambda x: x**2
+print("Kuadrat dari 4:", kuadrat(4))
