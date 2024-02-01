@@ -1,0 +1,10 @@
+def hitung_panjang_hidup(umur, harapan_hidup):
+    tahun_hidup = harapan_hidup - umur
+    bulan_hidup = tahun_hidup * 12
+    hari_hidup = tahun_hidup * 365
+    return tahun_hidup, bulan_hidup, hari_hidup
+
+umur_saat_ini = int(input("Masukan umur saat ini :"))
+harapan_hidup = int(input("Masukan harapan hidup :"))
+tahun, bulan, hari = hitung_panjang_hidup(umur_saat_ini, harapan_hidup)
+print(f"Anda diperkirakan akan hidup selama {tahun} tahun, {bulan} bulan, atau {hari} hari lagi.")
