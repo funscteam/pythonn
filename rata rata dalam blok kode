@@ -1,0 +1,5 @@
+nilai = [4, 6, 7, 4, 7, 3]
+total = sum(nilai)
+rata_rata = total / len(nilai)
+print("Total :", total)
+print("Rata- rata :", rata_rata)
