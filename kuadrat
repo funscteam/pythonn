@@ -1,0 +1,5 @@
+import math 
+
+a = 16 
+akar_kuadrat = math.sqrt(a)
+print("akar kuadarat dari", a, "adalah", akar_kuadrat)
