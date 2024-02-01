@@ -1,0 +1,14 @@
+def tambah_dua_angka(x, y):
+    return x + y
+
+def kali_tiga_angka(x, y, z):
+    return x * y * z
+
+a = 3
+b = 7
+c = 4
+
+hasil1 = tambah_dua_angka(a , b)
+hasil2 = kali_tiga_angka(a, b, c)
+print("Hasil pertama :", hasil1)
+print("Hasil kedua :", hasil2)
