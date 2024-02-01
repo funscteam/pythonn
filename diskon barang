@@ -1,0 +1,9 @@
+def hitung_diskon(harga , diskon):
+    jumlah_diskon = harga * (diskon / 100)
+    harga_setelah_diskon = harga - jumlah_diskon
+    return harga_setelah_diskon
+
+harga_barang = float(input("Masukan harga barang :"))
+diskon_barang = float(input("Masukan persentage diskon :"))
+harga_setelah_diskon = hitung_diskon(harga_barang, diskon_barang)
+print("Haraga setelah diskon :", harga_setelah_diskon)
