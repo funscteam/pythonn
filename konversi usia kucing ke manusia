@@ -1,0 +1,13 @@
+def konversi_usia_kucing_ke_manusia(usia_kucing):
+    if usia_kucing == 1:
+        usia_manusia = 15
+    elif usia_kucing == 2:
+        usia_manusia = 24
+    else:
+        usia_manusia = 24 + (usia_kucing - 2) * 4
+    return usia_manusia
+
+
+usia_kucing = int(input("Masukan usia kucing dalam tahun:"))
+usia_manusia = konversi_usia_kucing_ke_manusia(usia_kucing)
+print("Usian kucing setara manusia :", usia_manusia, "tahun")
