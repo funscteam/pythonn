@@ -1,0 +1,4 @@
+daftar_angka = [1, 2, 3, 4, 5]
+daftar_angka.append(6)
+daftar_angka.remove(3)
+print("List setelah manipulasi :", daftar_angka)
