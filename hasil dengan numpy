@@ -1,0 +1,6 @@
+import numpy as np 
+
+array_a = np.array([1,2,3])
+array_b = np.array([4, 5, 6])
+hasil = array_a + array_b
+print("Hasil penjumlahan dengan numpy :", hasil)
