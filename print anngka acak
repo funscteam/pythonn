@@ -1,0 +1,4 @@
+import random
+angka_acak = random.randint(1, 10)
+print("Angka acak antara 1 dan 10:", angka_acak)
+
