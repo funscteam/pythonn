@@ -1,0 +1,28 @@
+def tambah(a, b):
+    return a + b
+
+def kurang(a , b):
+    return a - b
+    
+def kali(a, b):
+    return a * b
+    
+def bagi(a, b):
+    return a / b
+    
+operasi = input("Pilih operasi(+, -, *, /) :" )
+a = float(input("Masukan nilai a :"))
+b = float(input("Masukan nilai b :"))
+
+if operasi == '+':
+    hasil = tambah(a, b)
+elif operasi == '-':
+    hasil = kurang(a, b)
+elif operasi == '*':
+    hasil = kali(a, b)
+elif operasi == '/':
+    hasil = bagi(a, b)
+else:
+    pritn("Operasi tidak valid")
+    
+print(f"Hasil {operasi} : {hasil}")
