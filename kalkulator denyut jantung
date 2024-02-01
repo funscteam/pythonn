@@ -1,0 +1,7 @@
+def hitung_denyut_jantung(usia):
+    denyut_jantung_maksimal = 220 - usia
+    return denyut_jantung_maksimal
+
+usia_pengguna = int(input("Masukan usia anda :"))
+denyut_jantung_maksimal = hitung_denyut_jantung(usia_pengguna)
+print("Denyut jantung maksimal anda :", denyut_jantung_maksimal)
