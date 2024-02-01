@@ -1,0 +1,12 @@
+def bagi_dengan_penanagnan_error(a, b):
+    try: 
+        hasil = a / b
+        print("Hasil pembagian :", hasil)
+    
+    except ZeroDivisionError:
+        print("Error : pembagian oleh noll tidak diizinkan!")
+
+a = 10
+b = 0
+
+bagi_dengan_penanagnan_error(a, b)
