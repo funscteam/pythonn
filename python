@@ -1,0 +1,11 @@
+def safe_division(a, b):
+    try:
+        result = a / b
+        return result
+    except ZeroDivisionError:
+        return "Error: pembagian dengan nol"
+numerator = 10
+denominator = 8
+
+print(f"Hasil pembagian :{safe_division(numerator, denominator)}")
+
