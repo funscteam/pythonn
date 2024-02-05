@@ -1,0 +1,6 @@
+import re 
+
+text = "Pytjhhon is powerfull programing languange"
+
+result = re.findall(r'\b\w{8}\b', text)
+print(f"Kata-kata dengan panjang 6 karakter: {result}")
