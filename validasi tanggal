@@ -1,0 +1,11 @@
+import datetime
+
+def is_valid_date(date_str):
+    try:
+        datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+        
+data = "2024-02-05"
+print(f"Tanggal valid:{is_valid_date(data)}")
