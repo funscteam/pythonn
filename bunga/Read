@@ -1,0 +1,18 @@
+# Menggambar Grafik dengan Turtle dari File DOCX
+
+Skrip Python ini membaca koordinat dan warna dari file `.docx`, kemudian menggunakan modul grafik Turtle untuk menggambar bentuk berdasarkan data yang diekstraksi.
+
+## Persyaratan
+
+Skrip ini memerlukan beberapa pustaka berikut:
+
+- `turtle`: Pustaka standar Python untuk menggambar dan membuat grafik secara interaktif.
+- `re`: Pustaka standar Python untuk bekerja dengan ekspresi reguler (regular expressions).
+- `python-docx`: Pustaka eksternal untuk membaca dan memanipulasi file `.docx`.
+
+## Instalasi
+
+Pastikan kamu sudah menginstal Python di sistemmu. Kamu bisa menginstal pustaka yang diperlukan menggunakan `pip`:
+
+```bash
+pip install python-docx
