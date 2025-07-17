@@ -1,0 +1,109 @@
+import cv2
+from ultralytics import YOLO
+import easyocr
+import torch
+import numpy as np
+import mysql.connector
+import os
+import re
+
+# Fungsi validasi format plat Indonesia
+def is_valid_plate(text):
+    pattern = r'^[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{1,3}$'
+    return re.match(pattern, text.strip()) is not None
+
+# Koneksi ke Database MySQL
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="db_plat"
+)
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS plat_nomor (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nomor_plat VARCHAR(50),
+    confidence FLOAT,
+    x1 INT,
+    y1 INT,
+    x2 INT,
+    y2 INT
+)
+""")
+conn.commit()
+
+device = 'cpu'
+model_path = "license_plate_detector.pt"
+if not os.path.exists(model_path):
+    print(f"Model {model_path} tidak ditemukan!")
+    exit()
+
+model = YOLO(model_path)
+model.to(device)
+
+reader = easyocr.Reader(['en'], gpu=False)
+cap = cv2.VideoCapture("video6.mp4")
+
+frame_count = 0
+saved_plates = {}  # Format: {"B 1234 CD": count}
+max_save_per_plate = 1  # ⬅️ Ganti dari 5 ke 3
+last_detected_plate = None
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    frame_count += 1
+    if frame_count % 2 != 0:
+        continue  # percepat video
+
+    results = model.predict(source=frame, device=device, verbose=False)[0]
+
+    for box in results.boxes:
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
+        conf = float(box.conf[0])
+
+        if conf > 0.5:
+            plate_crop = frame[y1:y2, x1:x2]
+            text_results = reader.readtext(plate_crop)
+            plate_text = text_results[0][1] if text_results else "N/A"
+
+            plate_text = plate_text.upper().replace(" ", "")
+            match = re.match(r'^([A-Z]{1,2})(\d{1,4})([A-Z]{1,3})$', plate_text)
+            if match:
+                plate_text = f"{match[1]} {match[2]} {match[3]}"
+
+            # Tampilkan kotak dan teks
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
+            cv2.putText(frame, plate_text, (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+            if is_valid_plate(plate_text):
+                if plate_text != last_detected_plate:
+                    last_detected_plate = plate_text
+
+                if plate_text not in saved_plates:
+                    saved_plates[plate_text] = 0
+
+                if saved_plates[plate_text] < max_save_per_plate:
+                    sql = "INSERT INTO plat_nomor (nomor_plat, confidence, x1, y1, x2, y2) VALUES (%s, %s, %s, %s, %s, %s)"
+                    val = (plate_text, conf, x1, y1, x2, y2)
+                    cursor.execute(sql, val)
+                    conn.commit()
+                    saved_plates[plate_text] += 1
+                    print(f"✅ Disimpan ({saved_plates[plate_text]}): {plate_text}")
+                # Tidak print kalau dilewati
+            # Tidak print kalau format tidak valid
+
+    cv2.imshow("License Plate Detection (CPU)", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+cursor.close()
+conn.close()
