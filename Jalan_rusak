@@ -1,0 +1,88 @@
+from ultralytics import YOLO
+import cv2
+import numpy as np
+import cvzone
+import mysql.connector
+
+# Load model
+model = YOLO("konfigurasi.pt")
+class_names = model.names
+cap = cv2.VideoCapture('jalanrusakair.mp4')
+count = 0
+
+# Koneksi ke database
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",  # sesuaikan jika ada
+    database="db_jalan",
+    port=3306
+)
+cursor = conn.cursor()
+
+# Buat tabel jika belum ada
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS lubang_jalan (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kelas VARCHAR(100),
+    diameter_cm FLOAT,
+    x INT,
+    y INT,
+    x2 INT,
+    y2 INT,
+    waktu_deteksi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+while True:
+    ret, img = cap.read()
+    if not ret:
+        break
+    count += 1
+    if count % 3 != 0:
+        continue
+
+    img = cv2.resize(img, (1020, 600))
+    h, w, _ = img.shape
+    results = model.predict(img)
+
+    for r in results:
+        boxes = r.boxes
+        masks = r.masks
+
+    if masks is not None:
+        masks = masks.data.cpu().numpy()
+        for seg, box in zip(masks, boxes):
+            seg = cv2.resize(seg, (w, h))
+            contours, _ = cv2.findContours(seg.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            for contour in contours:
+                d = int(box.cls)
+                c = class_names[d]
+
+                x, y, bw, bh = cv2.boundingRect(contour)
+                x2, y2 = x + bw, y + bh
+
+                # Hitung diameter
+                diameter_px = (bw + bh) / 2
+                diameter_cm = round(diameter_px * 0.026, 2)  # 1px ≈ 0.026 cm
+
+                # Gambar
+                cv2.polylines(img, [contour], True, (0, 0, 255), 2)
+                cv2.rectangle(img, (x, y), (x2, y2), (255, 0, 0), 2)
+                cvzone.putTextRect(img, f'{c} ({diameter_cm} cm)', (x, y - 10), 1, 1)
+
+                # Simpan ke database
+                sql = "INSERT INTO lubang_jalan (kelas, diameter_cm, x, y, x2, y2) VALUES (%s, %s, %s, %s, %s, %s)"
+                val = (c, diameter_cm, x, y, x2, y2)
+                cursor.execute(sql, val)
+                conn.commit()
+
+    cv2.imshow('img', img)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+cursor.close()
+conn.close()
