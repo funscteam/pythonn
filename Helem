@@ -1,0 +1,112 @@
+import cv2
+import pandas as pd
+from ultralytics import YOLO
+import cvzone
+import numpy as np
+import mysql.connector
+import time
+
+# Load model YOLO
+model = YOLO('konfigurasi.pt')
+
+# Fungsi mouse untuk bantu cari koordinat
+def RGB(event, x, y, flags, param):
+    if event == cv2.EVENT_MOUSEMOVE:
+        point = [x, y]
+        print("Posisi mouse:", point)
+
+cv2.namedWindow('RGB')
+cv2.setMouseCallback('RGB', RGB)
+
+# Buka video
+cap = cv2.VideoCapture("Video Plat.mp4")
+
+# Baca daftar kelas dari file
+with open("coco.txt", "r") as my_file:
+    class_list = my_file.read().split("\n")
+
+# --- Koneksi ke Database MySQL (phpMyAdmin) ---
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",              # sesuaikan dengan user MySQL Anda
+    password="",              # isi jika ada password
+    database="db_deteksi"  ,   # pastikan database ini sudah dibuat
+    port=3306
+)
+cursor = conn.cursor()
+
+# Buat tabel jika belum ada
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS hasil_deteksi (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kelas VARCHAR(50),
+    x1 INT,
+    y1 INT,
+    x2 INT,
+    y2 INT,
+    waktu_deteksi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+# Variabel bantu
+count = 0
+start_time = time.time()
+frame_skip = 5  # ambil 1 dari 5 frame
+deteksi_disimpan = []
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    count += 1
+    if count % frame_skip != 0:
+        continue
+
+    frame = cv2.resize(frame, (960, 540))
+    results = model.predict(frame, stream=True)
+
+    for result in results:
+        a = result.boxes.data
+        px = pd.DataFrame(a).astype("float")
+
+        for index, row in px.iterrows():
+            x1, y1, x2, y2 = int(row[0]), int(row[1]), int(row[2]), int(row[3])
+            d = int(row[5])
+            c = class_list[d]
+
+            print("Terdeteksi:", c)
+
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 255), 2)
+            cvzone.putTextRect(frame, f'{c}', (x1, y1), 1, 1)
+
+            if c.lower() in ["helm", "no_helm"]:
+                deteksi_disimpan.append((c, x1, y1, x2, y2))
+
+    # Tampilkan FPS
+    fps = round(1.0 / (time.time() - start_time), 2)
+    start_time = time.time()
+    cvzone.putTextRect(frame, f'FPS: {fps}', (20, 20), 1, 1)
+
+    # Tampilkan frame
+    cv2.imshow("RGB", frame)
+
+    # 🔴 Tambahan: hentikan video dengan ESC atau tombol 'q'
+    key = cv2.waitKey(1)
+    if key == 27 or key == ord('q'):
+        print("Video dihentikan oleh pengguna.")
+        break
+
+# Simpan semua deteksi ke database
+for val in deteksi_disimpan:
+    sql = "INSERT INTO hasil_deteksi (kelas, x1, y1, x2, y2) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(sql, val)
+
+conn.commit()
+print(f"{len(deteksi_disimpan)} data deteksi berhasil disimpan ke database.")
+
+# Bersihkan
+cap.release()
+cv2.destroyAllWindows()
+cursor.close()
+conn.close()
